@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Glowing Scientific Calculator</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap');
+  :root {
+    --blue: #1e3a8a;
+    --lightblue: #60a5fa;
+    --wrapper-bg: #0f141a;
+    --button-bg: #1e40af;
+    --button-bg-alt: #374151;
+    --button-bg-accent: #2563eb;
+    --text-light: #d1d5db;
+    --text-bright: #f3f4f6;
+    --glow-blue: #3b82f680;
+  }
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    background-color: var(--wrapper-bg);
+    color: var(--text-bright);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 2em 1em;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+  }
+  .calculator {
+    background: #152036;
+    border-radius: 12px;
+    box-shadow:
+      0 0 8px var(--glow-blue),
+      0 0 20px var(--glow-blue),
+      inset 0 0 10px var(--lightblue);
+    max-width: 400px;
+    width: 100%;
+    padding: 1.5rem 1rem 2rem;
+    user-select: none;
+  }
+  .display {
+    background-color: var(--blue);
+    font-family: 'Orbitron', monospace;
+    font-size: 2.3rem;
+    height: 3.5rem;
+    border-radius: 8px;
+    color: var(--text-bright);
+    padding: 0 1rem;
+    text-align: right;
+    line-height: 3.5rem;
+    box-shadow: 0 0 10px var(--glow-blue);
+    margin-bottom: 1em;
+    overflow-x: auto;
+  }
+  .row {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    flex-wrap: nowrap;
+  }
+  button {
+    flex: 1 1 auto;
+    border-radius: 8px;
+    font-weight: 700;
+    border: none;
+    color: var(--text-bright);
+    font-size: 2.5rem;
+    background-color: var(--button-bg-alt);
+    cursor: pointer;
+    transition:
+      box-shadow 0.3s ease,
+      background-color 0.3s ease,
+      color 0.3s ease;
+    position: relative;
+  }
+  button.glow {
+    background-color: var(--button-bg);
+    box-shadow:
+      0 0 6px var(--glow-blue),
+      0 0 10px var(--glow-blue),
+      0 0 20px var(--glow-blue);
+  }
+  button.glow:hover {
+    background-color: var(--button-bg-accent);
+    box-shadow:
+      0 0 15px #2563eb,
+      0 0 30px #3b82f6,
+      0 0 45px #60a5fa,
+      0 0 60px #60a5fa;
+    color: #fff;
+  }
+  button.accent {
+    background-color: white;
+    color: var(--button-bg);
+    font-weight: 700;
+    box-shadow: none;
+  }
+  button.accent.glow {
+    color: var(--button-bg-accent);
+    box-shadow:
+      0 0 8px #3b82f6,
+      0 0 15px #60a5fa,
+      0 0 25px #93c5fd;
+  }
+  button.accent.glow:hover {
+    background-color: var(--button-bg-accent);
+    color: white;
+    box-shadow:
+      0 0 20px #60a5fa,
+      0 0 40px #93c5fd,
+      0 0 60px #bae6fd;
+  }
+
+  button:active {
+    filter: brightness(80%);
+  }
+
+  label.radio-group {
+    color: var(--text-light);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+    font-size: 0.9rem;
+  }
+  label.radio-group input[type="radio"] {
+    accent-color: var(--lightblue);
+    margin-left: 0.3rem;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+<div class="calculator" role="application" aria-label="Scientific calculator">
+  <div class="display" id="display" aria-live="polite" aria-atomic="true">0</div>
+  <div class="row">
+    <button class="glow" data-action="fun" data-func="sin"><strong>sin</strong></button>
+    <button class="glow" data-action="fun" data-func="cos"><strong>cos</strong></button>
+    <button class="glow" data-action="fun" data-func="tan"><strong>tan</strong></button>
+    <label class="radio-group" style="flex: 1 0 auto;">
+      <input type="radio" name="angle" value="deg" checked /> Deg
+      <input type="radio" name="angle" value="rad" style="margin-left:0.8rem"/> Rad
+    </label>
+  </div>
+  <div class="row">
+    <button class="glow" data-action="fun" data-func="asin"><strong>sin⁻¹</strong></button>
+    <button class="glow" data-action="fun" data-func="acos"><strong>cos⁻¹</strong></button>
+    <button class="glow" data-action="fun" data-func="atan"><strong>tan⁻¹</strong></button>
+    <button class="glow" data-action="const" data-func="pi"><strong>π</strong></button>
+    <button class="glow" data-action="const" data-func="e"><strong>e</strong></button>
+  </div>
+  <div class="row">
+    <button class="glow" data-action="op" data-func="pow" data-val="xy"><strong>x<sup>y</sup></strong></button>
+    <button class="glow" data-action="op" data-func="pow3"><strong>x<sup>3</sup></strong></button>
+    <button class="glow" data-action="op" data-func="pow2"><strong>x<sup>2</sup></strong></button>
+    <button class="glow" data-action="fun" data-func="exp"><strong>e<sup>x</sup></strong></button>
+    <button class="glow" data-action="op" data-func="pow10"><strong>10<sup>x</sup></strong></button>
+  </div>
+  <div class="row">
+    <button class="glow" data-action="op" data-func="rootyx"><strong>y√x</strong></button>
+    <button class="glow" data-action="fun" data-func="root3"><strong>³√x</strong></button>
+    <button class="glow" data-action="fun" data-func="root"><strong>√x</strong></button>
+    <button class="glow" data-action="fun" data-func="ln"><strong>ln</strong></button>
+    <button class="glow" data-action="fun" data-func="log"><strong>log</strong></button>
+  </div>
+  <div class="row">
+    <button class="glow" data-action="input">(</button>
+    <button class="glow" data-action="input">)</button>
+    <button class="glow" data-action="fun" data-func="reciprocal"><strong>1/x</strong></button>
+    <button class="glow" data-action="op">%</button>
+    <button class="glow" data-action="fun" data-func="fact"><strong>n!</strong></button>
+  </div>
+  <div class="row">
+    <button class="glow" data-action="input">7</button>
+    <button class="glow" data-action="input">8</button>
+    <button class="glow" data-action="input">9</button>
+    <button class="accent" data-action="op" data-func="add">+</button>
+    <button class="accent glow" data-action="backspace">Back</button>
+  </div>
+  <div class="row">
+    <button class="glow" data-action="input">4</button>
+    <button class="glow" data-action="input">5</button>
+    <button class="glow" data-action="input">6</button>
+    <button class="accent" data-action="op" data-func="sub">−</button>
+    <button class="accent glow" data-action="ans">Ans</button>
+  </div>
+  <div class="row">
+    <button class="glow" data-action="input">1</button>
+    <button class="glow" data-action="input">2</button>
+    <button class="glow" data-action="input">3</button>
+    <button class="accent" data-action="op" data-func="mul">×</button>
+    <button class="accent glow" data-action="mplus">M+</button>
+  </div>
+  <div class="row">
+    <button class="glow" data-action="input">0</button>
+    <button class="glow" data-action="input">.</button>
+    <button class="accent" data-action="input">EXP</button>
+    <button class="accent" data-action="op" data-func="div">÷</button>
+    <button class="accent glow" data-action="mminus">M-</button>
+  </div>
+  <div class="row">
+    <button class="accent" data-action="toggle-sign">±</button>
+    <button class="accent" data-action="rnd">RND</button>
+    <button class="glow" data-action="clear">AC</button>
+    <button class="glow" data-action="calculate">=</button>
+    <button class="accent glow" data-action="mr">MR</button>
+  </div>
+</div>
+
+<footer style="position: fixed; bottom: 0; width: 100%; background: #111; color: #eee; text-align: center; padding: 10px 0; font-size: 12px; font-family: Arial, sans-serif; line-height: 1.6;">
+  <div>© 2025 Shairo. All rights reserved</div>
+  <div>We Maked, We Try, We Failed, We Helped</div>
+</footer>
+
+<script>
+  (() => {
+    const display = document.getElementById('display');
+    let currentInput = '0';
+    let lastAnswer = null;
+    let memory = 0;
+    let angleMode = 'deg';
+
+    function updateDisplay() {
+      display.textContent = currentInput || '0';
+    }
+
+    function roundResult(num) {
+      return Math.round((num + Number.EPSILON) * 1e12) / 1e12;
+    }
+
+    function factorial(n) {
+      if (n < 0) return NaN;
+      if (n === 0 || n === 1) return 1;
+      let res = 1;
+      for (let i = 2; i <= n; i++) res *= i;
+      return res;
+    }
+
+    function toRadians(deg) {
+      return deg * (Math.PI / 180);
+    }
+
+    function toDegrees(rad) {
+      return rad * (180 / Math.PI);
+    }
+
+    function safeEval(expr) {
+      try {
+        return Function(`"use strict";return (${expr})`)();
+      } catch {
+        return NaN;
+      }
+    }
+
+    function applyFunction(func, val) {
+      let num = parseFloat(val);
+      if (isNaN(num)) return 'Error';
+
+      switch (func) {
+        case 'sin':
+          return angleMode === 'deg' ? Math.sin(toRadians(num)) : Math.sin(num);
+        case 'cos':
+          return angleMode === 'deg' ? Math.cos(toRadians(num)) : Math.cos(num);
+        case 'tan':
+          return angleMode === 'deg' ? Math.tan(toRadians(num)) : Math.tan(num);
+        case 'asin':
+          return angleMode === 'deg' ? toDegrees(Math.asin(num)) : Math.asin(num);
+        case 'acos':
+          return angleMode === 'deg' ? toDegrees(Math.acos(num)) : Math.acos(num);
+        case 'atan':
+          return angleMode === 'deg' ? toDegrees(Math.atan(num)) : Math.atan(num);
+        case 'ln':
+          return Math.log(num);
+        case 'log':
+          return Math.log10(num);
+        case 'root':
+          return Math.sqrt(num);
+        case 'root3':
+          return Math.cbrt(num);
+        case 'exp':
+          return Math.exp(num);
+        case 'reciprocal':
+          return num !== 0 ? 1 / num : 'Error';
+        case 'fact':
+          return factorial(Math.floor(num));
+        case 'rnd':
+          return Math.random();
+        default:
+          return 'Error';
+      }
+    }
+
+    function handleButtonClick(e) {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+
+      const action = btn.dataset.action || '';
+      const func = btn.dataset.func || '';
+      const val = btn.textContent;
+
+      if (action === 'input') {
+        if (currentInput === '0') currentInput = val;
+        else currentInput += val;
+        updateDisplay();
+      } else if (action === 'clear') {
+        currentInput = '0';
+        updateDisplay();
+      } else if (action === 'backspace') {
+        if (currentInput.length > 1) {
+          currentInput = currentInput.slice(0, -1);
+        } else {
+          currentInput = '0';
+        }
+        updateDisplay();
+      } else if (action === 'calculate') {
+        try {
+          // Replace some special operators for JS evaluation
+          let expr = currentInput
+            .replace(/×/g, '*')
+            .replace(/÷/g, '/')
+            .replace(/−/g, '-')
+            .replace(/π/g, Math.PI)
+            .replace(/e/g, Math.E)
+            .replace(/EXP/g, 'e')
+            .replace(/%/g, '/100');
+
+          // Basic check and replace power functions x^y, x³, x², 10^x style
+          expr = expr.replace(/(\d+)\^(\d+)/g, (_, base, exp) => `Math.pow(${base},${exp})`);
+
+          // Evaluate
+          let res = safeEval(expr);
+          if (typeof res === 'number' && !isNaN(res) && isFinite(res)) {
+            currentInput = roundResult(res).toString();
+            lastAnswer = currentInput;
+          } else {
+            currentInput = 'Error';
+          }
+        } catch {
+          currentInput = 'Error';
+        }
+        updateDisplay();
+      } else if (action === 'fun') {
+        const res = applyFunction(func, currentInput);
+        currentInput = typeof res === "number" ? roundResult(res).toString() : res;
+        updateDisplay();
+      } else if (action === 'const') {
+        if (func === 'pi') currentInput += Math.PI.toFixed(15).replace(/0+$/, '');
+        else if (func === 'e') currentInput += Math.E.toFixed(15).replace(/0+$/, '');
+        updateDisplay();
+      } else if (action === 'op') {
+        // Add operators with spacing for clarity
+        if (val === '%') {
+          currentInput += '%';
+        } else if (val === '+') {
+          currentInput += '+';
+        } else if (val === '−') {
+          currentInput += '-';
+        } else if (val === '×') {
+          currentInput += '*';
+        } else if (val === '÷') {
+          currentInput += '/';
+        }
+        updateDisplay();
+      } else if (action === 'toggle-sign') {
+        if (currentInput.startsWith('-')) {
+          currentInput = currentInput.substring(1);
+        } else if (currentInput !== '0') {
+          currentInput = '-' + currentInput;
+        }
+        updateDisplay();
+      } else if (action === 'rnd') {
+        currentInput = Math.random().toString();
+        updateDisplay();
+      } else if (action === 'ans') {
+        if (lastAnswer !== null) {
+          currentInput += lastAnswer;
+          updateDisplay();
+        }
+      } else if (action === 'mplus') {
+        let val = parseFloat(currentInput);
+        if (!isNaN(val)) {
+          memory += val;
+        }
+      } else if (action === 'mminus') {
+        let val = parseFloat(currentInput);
+        if (!isNaN(val)) {
+          memory -= val;
+        }
+      } else if (action === 'mr') {
+        currentInput = memory.toString();
+        updateDisplay();
+      }
+    }
+
+    document.querySelector('.calculator').addEventListener('click', handleButtonClick);
+    document.querySelectorAll('input[name="angle"]').forEach(radio => {
+      radio.addEventListener('change', (e) => {
+        angleMode = e.target.value;
+      });
+    });
+
+    updateDisplay();
+  })();
+</script>
+</body>
+</html>
+
+```
